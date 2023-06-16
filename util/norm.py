@@ -1,6 +1,8 @@
 import torch.nn as nn
 import numpy as np
 import torch
+
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 class SpecificNorm(nn.Module):
     def __init__(self, epsilon=1e-8):
         """
@@ -9,11 +11,11 @@ class SpecificNorm(nn.Module):
         """
         super(SpecificNorm, self).__init__()
         self.mean = np.array([0.485, 0.456, 0.406])
-        self.mean = torch.from_numpy(self.mean).float().cuda()
+        self.mean = torch.from_numpy(self.mean).float().to(DEVICE)
         self.mean = self.mean.view([1, 3, 1, 1])
 
         self.std = np.array([0.229, 0.224, 0.225])
-        self.std = torch.from_numpy(self.std).float().cuda()
+        self.std = torch.from_numpy(self.std).float().to(DEVICE)
         self.std = self.std.view([1, 3, 1, 1])
 
     def forward(self, x):

@@ -23,6 +23,8 @@ from util.add_watermark import watermark_image
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
 
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+
 def lcm(a, b): return abs(a * b) / fractions.gcd(a, b) if a and b else 0
 
 transformer_Arcface = transforms.Compose([
@@ -65,7 +67,7 @@ if __name__ == '__main__':
         img_id = img_a.view(-1, img_a.shape[0], img_a.shape[1], img_a.shape[2])
 
         # convert numpy to tensor
-        img_id = img_id.cuda()
+        img_id = img_id.to(DEVICE)
 
         #create latent id
         img_id_downsample = F.interpolate(img_id, size=(112,112))
@@ -86,7 +88,7 @@ if __name__ == '__main__':
 
         for b_align_crop in img_b_align_crop_list:
 
-            b_align_crop_tenor = _totensor(cv2.cvtColor(b_align_crop,cv2.COLOR_BGR2RGB))[None,...].cuda()
+            b_align_crop_tenor = _totensor(cv2.cvtColor(b_align_crop,cv2.COLOR_BGR2RGB))[None,...].to(DEVICE)
 
             swap_result = model(None, b_align_crop_tenor, latend_id, None, True)[0]
             swap_result_list.append(swap_result)
@@ -95,15 +97,16 @@ if __name__ == '__main__':
         if opt.use_mask:
             n_classes = 19
             net = BiSeNet(n_classes=n_classes)
-            net.cuda()
+            net.to(DEVICE)
             save_pth = os.path.join('./parsing_model/checkpoint', '79999_iter.pth')
-            net.load_state_dict(torch.load(save_pth))
+            net.load_state_dict(torch.load(save_pth, map_location=torch.device(DEVICE)))
             net.eval()
         else:
             net =None
 
+        output_fp = os.path.join(opt.output_path, os.path.basename(opt.pic_b_path))
         reverse2wholeimage(b_align_crop_tenor_list, swap_result_list, b_mat_list, crop_size, img_b_whole, logoclass, \
-            os.path.join(opt.output_path, 'result_whole_swapsingle.jpg'), opt.no_simswaplogo,pasring_model =net,use_mask=opt.use_mask, norm = spNorm)
+            output_fp, opt.no_simswaplogo,pasring_model =net,use_mask=opt.use_mask, norm = spNorm)
 
         print(' ')
 

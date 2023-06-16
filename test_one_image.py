@@ -28,6 +28,16 @@ detransformer = transforms.Compose([
     ])
 if __name__ == '__main__':
     opt = TestOptions().parse()
+    opt.gpu_ids = -1
+    opt.pic_a_path = './demo_file/Iron_man.jpg'
+    opt.pic_b_path = './demo_file/specific1.png'
+    opt.Arc_path = './arcface_model/arcface_checkpoint.tar'
+    opt.output_path = './demo_file/'
+    opt.isTrain = False
+    opt.use_mask = True  ## new feature up-to-date
+
+    DEVICE = "cuda:%s" % opt.gpu_ids if opt.gpu_ids != -1 else "cpu"
+    print("DEVICE is ", DEVICE)
 
     start_epoch, epoch_iter = 1, 0
 
@@ -49,15 +59,16 @@ if __name__ == '__main__':
         img_att = img_b.view(-1, img_b.shape[0], img_b.shape[1], img_b.shape[2])
 
         # convert numpy to tensor
-        img_id = img_id.cuda()
-        img_att = img_att.cuda()
+        img_id = img_id.to(DEVICE)
+        img_att = img_att.to(DEVICE)
 
         #create latent id
         img_id_downsample = F.interpolate(img_id, size=(112,112))
         latend_id = model.netArc(img_id_downsample)
+        # 移动到cpu，是为了用np.linalg.norm
         latend_id = latend_id.detach().to('cpu')
         latend_id = latend_id/np.linalg.norm(latend_id,axis=1,keepdims=True)
-        latend_id = latend_id.to('cuda')
+        latend_id = latend_id.to(DEVICE)
 
 
         ############## Forward Pass ######################
