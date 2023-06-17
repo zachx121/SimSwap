@@ -22,6 +22,8 @@ from util.add_watermark import watermark_image
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
 
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+
 def _totensor(array):
     tensor = torch.from_numpy(array)
     img = tensor.transpose(0, 1).transpose(0, 2).contiguous()
@@ -58,9 +60,9 @@ def video_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_r
     if use_mask:
         n_classes = 19
         net = BiSeNet(n_classes=n_classes)
-        net.cuda()
+        net.to(DEVICE)
         save_pth = os.path.join('./parsing_model/checkpoint', '79999_iter.pth')
-        net.load_state_dict(torch.load(save_pth))
+        net.load_state_dict(torch.load(save_pth, map_location=torch.device("cpu")))
         net.eval()
     else:
         net =None
@@ -84,7 +86,7 @@ def video_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_r
                     # BGR TO RGB
                     # frame_align_crop_RGB = frame_align_crop[...,::-1]
 
-                    frame_align_crop_tenor = _totensor(cv2.cvtColor(frame_align_crop,cv2.COLOR_BGR2RGB))[None,...].cuda()
+                    frame_align_crop_tenor = _totensor(cv2.cvtColor(frame_align_crop,cv2.COLOR_BGR2RGB))[None,...].to(DEVICE)
 
                     swap_result = swap_model(None, frame_align_crop_tenor, id_vetor, None, True)[0]
                     cv2.imwrite(os.path.join(temp_results_dir, 'frame_{:0>7d}.jpg'.format(frame_index)), frame)
