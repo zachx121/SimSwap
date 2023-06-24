@@ -84,6 +84,8 @@ if __name__ == '__main__':
         latend_id = model.netArc(img_id_downsample)
         latend_id = F.normalize(latend_id, p=2, dim=1)
 
-        video_swap(opt.video_path, latend_id, model, app, opt.output_path,temp_results_dir=opt.temp_path,\
+        output_fp = os.path.join(opt.output_path, os.path.basename(opt.video_path))
+        print(">>> output-fp: %s" % output_fp)
+        video_swap(opt.video_path, latend_id, model, app, output_fp, temp_results_dir=opt.temp_path,\
             no_simswaplogo=opt.no_simswaplogo,use_mask=opt.use_mask,crop_size=crop_size)
 

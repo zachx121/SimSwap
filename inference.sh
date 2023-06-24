@@ -1,6 +1,6 @@
 
 
-face_fp="./A-MsWvVNwHlQt51.jpeg"
+face_fp="./output/head2.jpeg"
 path_b=$1
 echo $path_b
 /Users/zac/anaconda3/envs/simswap/bin/python test_wholeimage_swapsingle.py \

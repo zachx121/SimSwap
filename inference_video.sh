@@ -1,6 +1,6 @@
 
 
-face_fp="./head2.png"
+face_fp="./output/head1.jpeg"
 video_fp=$1
 
 /Users/zac/anaconda3/envs/simswap/bin/python test_video_swapsingle.py \
@@ -10,5 +10,5 @@ video_fp=$1
 --Arc_path arcface_model/arcface_checkpoint.tar \
 --pic_a_path $face_fp \
 --video_path $video_fp \
---output_path ./output/multi_test_swapsingle.mp4 \
+--output_path ./output/ \
 --temp_path ./temp_results
