@@ -20,6 +20,8 @@ from insightface_func.face_detect_crop_single import Face_detect_crop
 from util.videoswap import video_swap
 import os
 
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+
 def lcm(a, b): return abs(a * b) / fractions.gcd(a, b) if a and b else 0
 
 transformer = transforms.Compose([
@@ -74,14 +76,16 @@ if __name__ == '__main__':
         # img_att = img_b.view(-1, img_b.shape[0], img_b.shape[1], img_b.shape[2])
 
         # convert numpy to tensor
-        img_id = img_id.cuda()
-        # img_att = img_att.cuda()
+        img_id = img_id.to(DEVICE)
+        # img_att = img_att.to(DEVICE)
 
         #create latent id
         img_id_downsample = F.interpolate(img_id, size=(112,112))
         latend_id = model.netArc(img_id_downsample)
         latend_id = F.normalize(latend_id, p=2, dim=1)
 
-        video_swap(opt.video_path, latend_id, model, app, opt.output_path,temp_results_dir=opt.temp_path,\
+        output_fp = os.path.join(opt.output_path, os.path.basename(opt.video_path))
+        print(">>> output-fp: %s" % output_fp)
+        video_swap(opt.video_path, latend_id, model, app, output_fp, temp_results_dir=opt.temp_path,\
             no_simswaplogo=opt.no_simswaplogo,use_mask=opt.use_mask,crop_size=crop_size)
 
