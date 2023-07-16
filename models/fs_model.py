@@ -49,7 +49,7 @@ class fsModel(BaseModel):
             torch.backends.cudnn.benchmark = True
         self.isTrain = opt.isTrain
 
-        device = torch.device("cuda:%s" % opt.gpu_ids) if opt.gpu_ids not in ["-1", "[]", []] else "cpu"
+        device = torch.device("cuda:%s" % opt.gpu_ids[0]) if opt.gpu_ids not in ["-1", "[]", []] else "cpu"
 
         if opt.crop_size == 224:
             from .fs_networks import Generator_Adain_Upsample, Discriminator
