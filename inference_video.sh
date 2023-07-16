@@ -11,4 +11,5 @@ video_fp=$1
 --pic_a_path $face_fp \
 --video_path $video_fp \
 --output_path ./output/ \
---temp_path ./temp_results
+--temp_path ./temp_results \
+--gpu_ids 0

@@ -7,6 +7,7 @@ LastEditTime: 2021-11-24 19:00:38
 Description: 
 '''
 
+import logging
 import cv2
 import torch
 import fractions
@@ -53,6 +54,7 @@ if __name__ == '__main__':
         mode = 'ffhq'
     else:
         mode = 'None'
+    logging.info("opt.gpu_ids is %s" % opt.gpu_ids)
     model = create_model(opt)
     model.eval()
 
