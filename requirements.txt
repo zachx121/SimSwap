@@ -1,2 +1,6 @@
 insightface=0.2.1
 onnxruntime
+torch=1.13
+torchvision
+imageio==2.4.1
+moviepy
